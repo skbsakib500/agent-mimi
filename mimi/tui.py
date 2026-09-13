@@ -32,6 +32,7 @@ SCREENS = [
     ("Profiles",   "👥"),
     ("Plugins",    "🧩"),
     ("Sync",       "☁"),
+    ("Web",        "🌐"),
     ("Settings",   "⚒"),
 ]
 
@@ -403,6 +404,24 @@ def screen_automation(stdscr, y, x, h, w, d):
             pass
 
 
+def screen_web(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " WEB DASHBOARD ")
+    lines = [
+        "Start a browser dashboard from here.",
+        "",
+        "URL: http://127.0.0.1:8765/",
+        "",
+        "Enter to start the server.",
+        "Stop with Ctrl+C in terminal.",
+    ]
+    for i, line in enumerate(lines):
+        try:
+            stdscr.addstr(y + 2 + i, x + 3, line[: w - 6],
+                          curses.color_pair(CP_DIM))
+        except Exception:
+            pass
+
+
 def screen_sync(stdscr, y, x, h, w):
     from . import sync as S
     draw_box(stdscr, y, x, h, w, " CLOUD SYNC ")
@@ -695,6 +714,7 @@ EDITOR_MAP = {
     "Profiles":   "mimi.profiles",
     "Plugins":    "mimi.plugins",
     "Sync":       "mimi.sync",
+    "Web":        "mimi.web.server",
     "Settings":   "mimi.api_manager",
 }
 

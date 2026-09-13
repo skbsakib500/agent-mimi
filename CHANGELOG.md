@@ -1,14 +1,17 @@
 # Changelog — Agent Mimi
 
-## [6.0.0] — "Nexus"
+## [7.0.0] — "Aurora Web"
 ### Added
-- Multi-profile system (separate DB per profile)
-- Plugin system with auto-discovery (`mimi/plug_store/`)
-- Cloud sync via Git (auto pull on start, push on exit)
-- Command palette (fuzzy search, `:` key)
-- TUI themes: midnight, sunset, forest
-- Modal detail popups, live search, mouse support
-- Charts inside TUI (study trend, sparklines)
+- Web dashboard (browser-based, zero dependencies)
+- PWA support (installable, offline-ready)
+- Live actions from browser (add/complete/delete tasks, add goals, log study, journal)
+- Modal forms in web UI
+- Live charts in dashboard
+
+## [6.0.0] — "Nexus"
+- Multi-profile system
+- Plugin system (`mimi/plug_store/`)
+- Cloud sync (Git-backed, auto)
 
 ## [5.0.0] — "Quantum"
 - Full-screen curses TUI
@@ -20,12 +23,10 @@
 
 ## [3.0.0] — "Nova"
 - XP, levels, 20 badges
-- Auto-award, level-up celebration
 - Bilingual UI (EN / BN)
 
 ## [2.1.0] — "Aurora"
 - Pomodoro Pro, weekly HTML report
-- Responsive cards, footer status bar
 
 ## [2.0.0] — "Zenith"
-- Talk to Mimi (agent), insights, automation
+- Talk to Mimi, insights, automation

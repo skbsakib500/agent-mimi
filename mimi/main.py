@@ -64,7 +64,8 @@ CATEGORIES = {
         ("Data Management", "mimi.data_manager"),
         ("Profiles", "mimi.profiles"),
         ("Plugins", "mimi.plugins"),
-        ("Cloud Sync", "mimi.sync")]},
+        ("Cloud Sync", "mimi.sync"),
+        ("Web Dashboard", "mimi.web.server")]},
     "7": {"title": "APIS", "icon": "[@]", "items": [
         ("API Keys", "mimi.api_manager"),
         ("Gemini", "mimi.api_gemini"),
