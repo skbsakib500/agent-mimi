@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+data/*.db-shm
+data/*.db-wal
+data/profiles/*/mimi.db-shm
+data/profiles/*/mimi.db-wal
+.termux/
+exports/
+reports/
+backups/
