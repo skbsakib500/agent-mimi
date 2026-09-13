@@ -9,6 +9,7 @@ from . import tui_themes
 from . import tui_charts
 from . import tui_search
 from . import tui_modal
+from . import auto_sync
 
 try:
     from zoneinfo import ZoneInfo
@@ -524,7 +525,7 @@ def draw_footer(stdscr, h, w, msg="", query=""):
     elif query:
         left = f" filter: /{query}   ·   Esc clears   ·   q quit "
     else:
-        left = " ↑↓ nav · Enter edit · v view · / search · : palette · T theme · q quit "
+        left = " ↑↓ · Enter · v view · / find · : palette · T theme · Y sync · q quit "
     stdscr.attron(curses.color_pair(CP_HEADER))
     try:
         stdscr.addstr(h - 1, 0, " " * w)
@@ -535,6 +536,11 @@ def draw_footer(stdscr, h, w, msg="", query=""):
 
 
 def run(stdscr):
+    # Auto-pull on startup (silent)
+    try:
+        auto_sync.on_start()
+    except Exception:
+        pass
     curses.curs_set(0)
     stdscr.nodelay(True)
     stdscr.timeout(200)
@@ -626,6 +632,20 @@ def run(stdscr):
                     stdscr.nodelay(True)
                     stdscr.timeout(200)
             d = stats()
+        elif ch == ord('Y'):
+            # Manual sync (both ways)
+            curses.def_prog_mode()
+            curses.endwin()
+            from .sync import push as _push, pull as _pull
+            print("\n  Syncing...")
+            ok1, m1 = _pull()
+            print(f"  pull: {'OK' if ok1 else 'X'} {m1[:80]}")
+            ok2, m2 = _push()
+            print(f"  push: {'OK' if ok2 else 'X'} {m2[:80]}")
+            input("  Enter to return...")
+            stdscr.refresh()
+            stdscr.nodelay(True)
+            stdscr.timeout(200)
         elif ch == ord('T'):
             tui_themes.cycle()
             tui_themes.apply()

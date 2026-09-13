@@ -2,8 +2,8 @@
 from datetime import datetime
 
 APP_NAME = "AGENT MIMI"
-VERSION = "2.0.0"
-CODENAME = "Zenith"
+VERSION = "6.0.0"
+CODENAME = "Nexus"
 SYSTEM = "Personal Life Agent"
 USER_NAME = "SKB Sakib"
 SCHEMA_VERSION = 1

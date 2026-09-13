@@ -1,27 +1,31 @@
-# Changelog - Agent Mimi
+# Changelog — Agent Mimi
 
-## [2.0.0] - 2026-09-13 - "Zenith"
-
+## [6.0.0] — "Nexus"
 ### Added
-- Talk to Mimi (T): conversational agent.
-  - Offline intent parser for common commands.
-  - Optional LLM backend (OpenAI, Anthropic, Ollama).
-- Automation Engine (monitors + rules + scheduler).
-- Insights Engine (streaks, best hour, top subject, week vs week).
-- Backup Center (manual DB snapshots + integrity check).
-- Export (JSON + CSV).
-- New modules: Faith, Learning, Career, Digital, Relationships,
-  Mistakes, Achievements.
+- Multi-profile system (separate DB per profile)
+- Plugin system with auto-discovery (`mimi/plug_store/`)
+- Cloud sync via Git (auto pull on start, push on exit)
+- Command palette (fuzzy search, `:` key)
+- TUI themes: midnight, sunset, forest
+- Modal detail popups, live search, mouse support
+- Charts inside TUI (study trend, sparklines)
 
-### Changed
-- Single source of truth for version: mimi/core.py VERSION.
-- Central DB layer with db() context manager everywhere.
-- Module router handles any zero-arg main()/run().
+## [5.0.0] — "Quantum"
+- Full-screen curses TUI
 
-### Fixed
-- SQL placeholder mismatch in automation log write.
-- Connection leaks in analytics, intelligence, data_manager.
-- Missing system_logs table in foundation schema.
+## [4.0.0] — "Oracle"
+- Daily briefing, smart suggestions
+- Groq / Gemini / Weather / Google OAuth
+- Text-to-speech, notifications
 
-## [1.0.0] - 2026-09-13 - "Echo"
-- Initial release: 12 modules, dashboard, analytics, data manager.
+## [3.0.0] — "Nova"
+- XP, levels, 20 badges
+- Auto-award, level-up celebration
+- Bilingual UI (EN / BN)
+
+## [2.1.0] — "Aurora"
+- Pomodoro Pro, weekly HTML report
+- Responsive cards, footer status bar
+
+## [2.0.0] — "Zenith"
+- Talk to Mimi (agent), insights, automation
