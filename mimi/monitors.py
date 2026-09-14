@@ -66,6 +66,7 @@ def collect():
 
 
 def evaluate(metrics):
+    from .predict import predict_goal_slips
     from .automation_rules import (study_low, goal_low, mission_low,
                                     task_overdue, task_due_soon,
                                     finance_negative, sleep_low)
@@ -87,4 +88,16 @@ def evaluate(metrics):
     if m: push(finance_negative(m["balance"]))
     m = metrics.get("sleep")
     if m: push(sleep_low(m["avg_minutes"]))
+    # Predictive warnings
+    try:
+        from .automation_rules import Rule
+        for g in predict_goal_slips():
+            rules.append(Rule(
+                code="GOAL_RISK",
+                severity="critical" if g["risk"] == "overdue" else "warning",
+                title=f"Goal at risk: {g['title']}",
+                message=g["msg"],
+                module="goals"))
+    except Exception:
+        pass
     return rules

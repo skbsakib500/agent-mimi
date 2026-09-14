@@ -287,6 +287,12 @@ PAGE = """<!doctype html>
   </h2>
   <ul class="list" id="journal"></ul>
 
+  <h2>Talk to Mimi</h2>
+<div id="chat" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;height:320px;overflow-y:auto;margin-bottom:10px"></div>
+<div style="display:flex;gap:8px">
+  <input id="chat-in" placeholder="Ask Mimi anything..." style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:14px;font-family:inherit">
+  <button onclick="sendChat()" style="background:var(--accent);color:#000;border:none;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer">Send</button>
+</div>
   <footer>Agent Mimi · <span id="fetch">connecting</span></footer>
 </div>
 
@@ -586,6 +592,33 @@ document.getElementById('modal').addEventListener('click', e=>{
 
 load();
 setInterval(load, 5000);
+</script>
+<script>
+function addMsg(text, mine){
+  const c = document.getElementById("chat");
+  if(!c) return;
+  const d = document.createElement("div");
+  d.style.cssText = "padding:8px 12px;border-radius:10px;margin-bottom:8px;max-width:80%;white-space:pre-wrap;font-size:13px;" + (mine ? "background:#2a1a4a;margin-left:auto;color:#e5e7eb" : "background:#1a2a3a;color:#c084fc");
+  d.textContent = text;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+async function sendChat(){
+  const inp = document.getElementById("chat-in");
+  const msg = inp.value.trim();
+  if(!msg) return;
+  inp.value = "";
+  addMsg(msg, true);
+  try{
+    const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({message: msg})});
+    const j = await r.json();
+    addMsg(j.reply || j.error || "(no reply)", false);
+  }catch(e){ addMsg("error: "+e, false); }
+}
+document.addEventListener("DOMContentLoaded", function(){
+  const inp = document.getElementById("chat-in");
+  if(inp) inp.addEventListener("keydown", function(e){ if(e.key==="Enter") sendChat(); });
+});
 </script>
 </body>
 </html>"""

@@ -1,7 +1,7 @@
 """Shared HTTP helper for all APIs."""
 import json, urllib.request, urllib.error, urllib.parse
 
-TIMEOUT = 20
+TIMEOUT = 90
 USER_AGENT = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36"
 
 def get_json(url, params=None, headers=None):

@@ -73,6 +73,14 @@ class Handler(BaseHTTPRequestHandler):
         except Exception:
             payload = {}
         path = parsed.path
+        if path == "/api/chat":
+            try:
+                from .chat_api import handle_chat
+                result = handle_chat(payload)
+                self._send(200, json.dumps(result), "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"ok": False, "error": str(e)}), "application/json")
+            return
         if path == "/api/action":
             try:
                 from .api import handle

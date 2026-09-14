@@ -27,12 +27,19 @@ SCREENS = [
     ("Debts",      "⚖"),
     ("Journal",    "✎"),
     ("Insights",   "★"),
+    ("Review",     "📋"),
+    ("Plan",       "🗓"),
+    ("Voice",      "🎤"),
+    ("Vision",     "👁"),
+    ("Predict",    "🔮"),
     ("Progress",   "✦"),
     ("Automation", "⚙"),
     ("Profiles",   "👥"),
     ("Plugins",    "🧩"),
     ("Sync",       "☁"),
     ("Web",        "🌐"),
+    ("Mimi",       "🛡"),
+    ("Oath",       "📜"),
     ("Settings",   "⚒"),
 ]
 
@@ -335,6 +342,235 @@ def screen_journal(stdscr, y, x, h, w):
         data = []
     screen_list(stdscr, y, x, h, w, "JOURNAL",
                 [("DATE", 12), ("TITLE", 40)], data)
+
+
+def screen_vision(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " VISION ")
+    try:
+        from .vision import available
+        ok = available()
+    except Exception:
+        ok = False
+    lines = [
+        "Enter to launch receipt scanner.",
+        "",
+        "Status: " + ("READY (Gemini key set)" if ok else "MISSING Gemini key"),
+        "",
+        "Snap a receipt, then pass its path.",
+        "Mimi will read it and log the expense.",
+    ]
+    for i, line in enumerate(lines):
+        if i == 2:
+            col = CP_GOOD if ok else CP_BAD
+        else:
+            col = CP_DIM
+        try:
+            stdscr.addstr(y + 2 + i, x + 3, line[: w - 6],
+                          curses.color_pair(col))
+        except Exception:
+            pass
+
+
+
+def screen_mimi(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " MIMI · GUARDIAN CORE ")
+    try:
+        from .constitution import OWNER, PLEDGE_BN, PRINCIPLES, is_sealed
+    except Exception:
+        try:
+            stdscr.addstr(y + 2, x + 3, "constitution missing",
+                          curses.color_pair(CP_BAD))
+        except Exception:
+            pass
+        return
+    row = y + 2
+    def put(line, col=CP_DIM, bold=False):
+        nonlocal row
+        if row >= y + h - 2:
+            return
+        attr = curses.color_pair(col) | (curses.A_BOLD if bold else 0)
+        try:
+            stdscr.addstr(row, x + 3, line[: w - 6], attr)
+        except Exception:
+            pass
+        row += 1
+
+    put(f"Owner: {OWNER}", CP_ACCENT, True)
+    put(f"Sealed: {'YES' if is_sealed() else 'TAMPERED'}",
+        CP_GOOD if is_sealed() else CP_BAD, True)
+    put("")
+    for p in PRINCIPLES:
+        put(f" {p['id']}. {p['bn']} - {p['name']}", CP_GOOD, True)
+        put(f"    {p['rule'][:w-10]}", CP_DIM)
+
+
+
+def screen_oath(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " SAKIB'S FINAL WORDS ")
+    try:
+        from .final_words import SAKIB_FINAL_WORDS_BN as TXT
+    except Exception:
+        return
+    row = y + 2
+    for line in TXT.splitlines():
+        if row >= y + h - 2:
+            break
+        if not line.strip():
+            row += 1
+            continue
+        col = CP_ACCENT if line.strip().startswith(("মিমি", "SKB")) else CP_CARD
+        try:
+            stdscr.addstr(row, x + 3, line[: w - 6],
+                          curses.color_pair(col))
+        except Exception:
+            pass
+        row += 1
+
+
+
+def screen_voice(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " VOICE ")
+    try:
+        from .voice import available
+        ok = available()
+    except Exception:
+        ok = False
+    lines = [
+        "Press Enter to launch voice capture.",
+        "",
+        "Status: " + ("READY" if ok else "MISSING termux-speech-to-text"),
+        "",
+        "Install Termux:API from F-Droid",
+        "then: pkg install -y termux-api",
+    ]
+    for i, line in enumerate(lines):
+        if i == 2:
+            col = CP_GOOD if ok else CP_BAD
+        else:
+            col = CP_DIM
+        try:
+            stdscr.addstr(y + 2 + i, x + 3, line[: w - 6],
+                          curses.color_pair(col))
+        except Exception:
+            pass
+
+
+
+def screen_plan(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " TODAY'S PLAN ")
+    try:
+        from .ai_plan import plan
+        text, g, src = plan()
+    except Exception as e:
+        try:
+            stdscr.addstr(y + 2, x + 3, f"error: {e}",
+                          curses.color_pair(CP_BAD))
+        except Exception:
+            pass
+        return
+    row = y + 2
+    for line in text.splitlines():
+        if row >= y + h - 2:
+            break
+        if line.startswith("##"):
+            attr = curses.color_pair(CP_ACCENT) | curses.A_BOLD
+        elif line.startswith("-"):
+            attr = curses.color_pair(CP_CARD)
+        else:
+            attr = curses.color_pair(CP_DIM)
+        try:
+            stdscr.addstr(row, x + 3, line[: w - 6], attr)
+        except Exception:
+            pass
+        row += 1
+
+
+def screen_predict(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " PREDICTIVE ")
+    try:
+        from .predict import forecast_all
+        f = forecast_all()
+    except Exception as e:
+        try:
+            stdscr.addstr(y + 2, x + 3, f"error: {e}",
+                          curses.color_pair(CP_BAD))
+        except Exception:
+            pass
+        return
+    row = y + 2
+    def put(line, col=CP_DIM, bold=False):
+        nonlocal row
+        if row >= y + h - 2:
+            return
+        attr = curses.color_pair(col) | (curses.A_BOLD if bold else 0)
+        try:
+            stdscr.addstr(row, x + 3, line[: w - 6], attr)
+        except Exception:
+            pass
+        row += 1
+
+    put("GOAL RISKS", CP_ACCENT, True)
+    if not f["goals"]:
+        put("  all on track", CP_GOOD)
+    for g in f["goals"]:
+        col = CP_BAD if g["risk"] == "overdue" else CP_WARN
+        put("  ! " + g["title"][:40], col)
+    put("")
+
+    put("STUDY FORECAST", CP_ACCENT, True)
+    s = f["study"]
+    arrow = "UP" if s["trend"] == "up" else "DOWN" if s["trend"] == "down" else "FLAT"
+    col = CP_GOOD if s["trend"] == "up" else CP_BAD if s["trend"] == "down" else CP_DIM
+    put(f"  avg {s['avg']:.1f}h/day   trend {arrow}   next7d {s['predicted']:.1f}h", col)
+    put("")
+
+    put("FINANCE", CP_ACCENT, True)
+    fin = f["finance"]
+    col = CP_BAD if fin["daily"] < 0 else CP_GOOD
+    put(f"  daily net {fin['daily']:,.0f}", col)
+    put("  " + fin["msg"], col)
+    put("")
+
+    put("HABIT FRESHNESS", CP_ACCENT, True)
+    for k, v in f["consistency"].items():
+        if v is None:
+            put(f"  {k:<10} : never", CP_BAD)
+        elif v == 0:
+            put(f"  {k:<10} : today", CP_GOOD)
+        elif v <= 2:
+            put(f"  {k:<10} : {v}d ago", CP_WARN)
+        else:
+            put(f"  {k:<10} : {v}d ago (stale)", CP_BAD)
+
+
+def screen_review(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " WEEKLY REVIEW ")
+    try:
+        from .ai_review import gather_week, offline_review
+        wk = gather_week()
+        text = offline_review(wk)
+    except Exception as e:
+        try:
+            stdscr.addstr(y + 2, x + 3, f"error: {e}",
+                          curses.color_pair(CP_BAD))
+        except Exception:
+            pass
+        return
+    line_y = y + 2
+    for line in text.splitlines():
+        if line_y >= y + h - 2:
+            break
+        if line.startswith("##"):
+            attr = curses.color_pair(CP_ACCENT) | curses.A_BOLD
+            txt = line
+        else:
+            attr = curses.color_pair(CP_CARD)
+            txt = line
+        try:
+            stdscr.addstr(line_y, x + 3, txt[: w - 6], attr)
+        except Exception:
+            pass
+        line_y += 1
 
 
 def screen_insights(stdscr, y, x, h, w, d):
@@ -709,6 +945,13 @@ EDITOR_MAP = {
     "Debts":      "mimi.debts",
     "Journal":    "mimi.journal",
     "Insights":   "mimi.intelligence",
+    "Review":     "mimi.ai_review",
+    "Predict":    "mimi.predict",
+    "Plan":       "mimi.ai_plan",
+    "Voice":      "mimi.voice",
+    "Mimi":       "mimi.self_update",
+    "Oath":       "mimi.final_words",
+    "Vision":     "mimi.vision",
     "Progress":   "mimi.progress",
     "Automation": "mimi.automation",
     "Profiles":   "mimi.profiles",
