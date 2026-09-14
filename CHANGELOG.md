@@ -1,27 +1,42 @@
 # Changelog — Agent Mimi
 
-## [10.0.0] — "Guardian"
+## [11.0.0] — "Nova"
 
 ### Added
-- Council of 11 Brains (Nusrat + 10 departments)
-- Cryptographic constitution (HMAC-SHA256, key at ~/.mimi/keys)
-- Append-only signed audit chain
-- Owner-gated permissions with refuse-list
-- Upgrade Lab (detect → propose → sandbox → apply → rollback)
-- Department Factory (Mimi can propose new departments)
-- Health Diagnostic (Sonar)
-- Sonic CLI
+- Nova TUI: gradient header, multi-panel dashboard, live clock
+- Android-style UI: top app bar, bottom nav, Material cards, FAB
+- UI toolkit: theme engine (8 palettes), icons (120+),
+  widgets (gradient, box, card, sparkline, table, tree),
+  layout (Screen, Stack, Columns, Grid, Split),
+  animations (spinner, shimmer, boot, progress)
+- Truecolor + 256-color fallback
+- Flicker-free double-buffered renderer
 
-### Security
-- Constitution signature verified at every boot
-- Key chmod 600 enforced
-- Refuse-list cannot be bypassed
-- Sandbox isolated from production data/
+### Changed
+- Default launcher now opens Nova TUI
+- `python -m mimi app` opens Android-style UI
 
-## [9.0.0] — "Echo"    Web chat, voice, vision
-## [7.0.0] — "Aurora"  Web dashboard + PWA
-## [6.0.0] — "Nexus"   Multi-profile, plugins, cloud sync
-## [5.0.0] — "Quantum" TUI
-## [4.0.0] — "Oracle"  Briefing, LLM APIs
-## [3.0.0] — "Nova"    XP, levels, badges
-## [2.0.0] — "Zenith"  Agent, insights, automation
+## [10.0.0] — "Guardian"
+- Council of 11 Brains, crypto constitution,
+  signed audit chain, upgrade lab, department factory
+
+## [9.0.0] — "Echo"
+- Web chat, voice command, vision
+
+## [7.0.0] — "Aurora Web"
+- Web dashboard + PWA
+
+## [6.0.0] — "Nexus"
+- Multi-profile, plugins, cloud sync
+
+## [5.0.0] — "Quantum"
+- Full-screen curses TUI
+
+## [4.0.0] — "Oracle"
+- Briefing, suggestions, LLM APIs
+
+## [3.0.0] — "Nova" (initial)
+- XP, levels, badges
+
+## [2.0.0] — "Zenith"
+- Agent, insights, automation
