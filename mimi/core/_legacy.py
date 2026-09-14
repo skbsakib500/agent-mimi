@@ -2,8 +2,8 @@
 from datetime import datetime
 
 APP_NAME = "AGENT MIMI"
-VERSION = "11.0.0"
-CODENAME = "Nova"
+VERSION = "12.0.0"
+CODENAME = "iOS"
 SYSTEM = "Personal Life Agent"
 USER_NAME = "SKB Sakib"
 SCHEMA_VERSION = 1

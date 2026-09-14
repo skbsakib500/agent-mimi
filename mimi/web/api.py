@@ -130,6 +130,28 @@ def add_study(p):
     return _ok(message=f"Study session '{subject}' logged.")
 
 
+
+
+def add_expense(p):
+    from ..database import execute
+    from datetime import date
+    try:
+        amt = float(p.get("amount") or 0)
+    except (TypeError, ValueError):
+        return _err("amount must be number")
+    if amt <= 0:
+        return _err("amount must be > 0")
+    execute(
+        """INSERT INTO finance
+           (transaction_date, transaction_type, category, amount, description)
+           VALUES (?, 'expense', ?, ?, ?)""",
+        (p.get("date") or str(date.today()),
+         p.get("category") or "general",
+         amt,
+         p.get("description") or ""))
+    return _ok(message=f"Expense ৳{amt:,.2f} added.")
+
+
 HANDLERS = {
     "task_add":      add_task,
     "task_complete": complete_task,
@@ -137,6 +159,7 @@ HANDLERS = {
     "goal_add":      add_goal,
     "journal_add":   add_journal,
     "study_add":     add_study,
+    "expense_add":   add_expense,
 }
 
 

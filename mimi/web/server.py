@@ -33,6 +33,29 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self._send(500, f"render error: {type(e).__name__}: {e}")
             return
+
+        if path == "/app" or path == "/app/":
+            try:
+                from .ios.shell import render_page as ios_page
+                self._send(200, ios_page())
+            except Exception as e:
+                self._send(500, f"ios error: {type(e).__name__}: {e}")
+            return
+
+        if path == "/app-manifest.json":
+            from .ios.pwa import MANIFEST
+            self._send(200, MANIFEST,
+                       "application/manifest+json; charset=utf-8")
+            return
+        if path == "/app-sw.js":
+            from .ios.sw import SERVICE_WORKER
+            self._send(200, SERVICE_WORKER,
+                       "application/javascript; charset=utf-8")
+            return
+        if path == "/app-icon.svg":
+            from .ios.pwa import ICON_SVG
+            self._send(200, ICON_SVG, "image/svg+xml")
+            return
         if path == "/data.json":
             try:
                 self._send(200, render_data_json(), "application/json")
@@ -73,6 +96,42 @@ class Handler(BaseHTTPRequestHandler):
         except Exception:
             payload = {}
         path = parsed.path
+        if path == "/api/council":
+            try:
+                from ..council.bootstrap import bootstrap
+                bootstrap()
+                from ..council.council import council
+                depts = [{"name": d.NAME, "role": d.ROLE,
+                          "priority": d.PRIORITY}
+                         for d in council().all()]
+                self._send(200, json.dumps({"ok": True,
+                                             "departments": depts}),
+                           "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"ok": False,
+                                             "error": str(e)}),
+                           "application/json")
+            return
+        if path == "/api/launch":
+            try:
+                params = parse_qs(parsed.query)
+                p_name = (params.get("path") or [""])[0]
+                if not p_name.startswith("mimi."):
+                    self._send(400, json.dumps({"ok": False,
+                                                 "error": "invalid path"}),
+                               "application/json")
+                    return
+                # Editors are TUI-only; we just confirm the module exists.
+                import importlib
+                importlib.import_module(p_name)
+                self._send(200, json.dumps({"ok": True,
+                                             "path": p_name}),
+                           "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"ok": False,
+                                             "error": str(e)}),
+                           "application/json")
+            return
         if path == "/api/chat":
             try:
                 from .chat_api import handle_chat

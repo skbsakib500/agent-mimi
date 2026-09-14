@@ -1,42 +1,35 @@
 # Changelog — Agent Mimi
 
-## [11.0.0] — "Nova"
+## [12.0.0] — "iOS"
 
 ### Added
-- Nova TUI: gradient header, multi-panel dashboard, live clock
-- Android-style UI: top app bar, bottom nav, Material cards, FAB
-- UI toolkit: theme engine (8 palettes), icons (120+),
-  widgets (gradient, box, card, sparkline, table, tree),
-  layout (Screen, Stack, Columns, Grid, Split),
-  animations (spinner, shimmer, boot, progress)
-- Truecolor + 256-color fallback
-- Flicker-free double-buffered renderer
+- iOS-style web app at `/app` — install-to-home-screen PWA
+- Frosted glass nav bar with large-title collapse
+- Bottom tab bar (Home, Council, Nusrat, Stats, More)
+- iOS message-style chat with typing indicator
+- Bottom sheets for add task / goal / expense / journal
+- Floating action button (FAB)
+- Touch gestures: swipe-back, swipe-tabs, edge-swipe
+- Haptic feedback on all interactions
+- Service worker for offline use
+- New API routes: `/api/council`, `/api/launch`, `/api/action`
 
 ### Changed
-- Default launcher now opens Nova TUI
-- `python -m mimi app` opens Android-style UI
+- Version bumped to V12.0 "iOS"
+
+## [11.0.0] — "Nova"
+- Nova TUI, theme engine (8 palettes), 120+ icons
+- Widgets, layout engine, animations
+- Android-style UI
 
 ## [10.0.0] — "Guardian"
 - Council of 11 Brains, crypto constitution,
   signed audit chain, upgrade lab, department factory
 
-## [9.0.0] — "Echo"
-- Web chat, voice command, vision
-
-## [7.0.0] — "Aurora Web"
-- Web dashboard + PWA
-
-## [6.0.0] — "Nexus"
-- Multi-profile, plugins, cloud sync
-
-## [5.0.0] — "Quantum"
-- Full-screen curses TUI
-
-## [4.0.0] — "Oracle"
-- Briefing, suggestions, LLM APIs
-
-## [3.0.0] — "Nova" (initial)
-- XP, levels, badges
-
-## [2.0.0] — "Zenith"
-- Agent, insights, automation
+## [9.0.0] — "Echo"    Web chat, voice, vision
+## [7.0.0] — "Aurora"  Web dashboard + PWA
+## [6.0.0] — "Nexus"   Multi-profile, plugins, cloud sync
+## [5.0.0] — "Quantum" Full-screen curses TUI
+## [4.0.0] — "Oracle"  Briefing, suggestions, LLM APIs
+## [3.0.0] — "Nova"    XP, levels, badges (initial)
+## [2.0.0] — "Zenith"  Agent, insights, automation

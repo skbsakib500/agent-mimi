@@ -1,14 +1,15 @@
 # Agent Mimi
 
-**Version 11.0 "Nova"** — Personal Life OS for Termux
+**Version 12.0 "iOS"** — Personal Life OS for Termux
 
-## Three interfaces
+## Four interfaces
 
-    python -m mimi              # Nova TUI (default)
-    python -m mimi app          # Android-style UI
-    python -m mimi sonic        # Sonic CLI
-    python -m mimi --classic    # classic menu
-    python -m mimi web          # browser dashboard
+    python -m mimi             # Nova TUI (curses)
+    python -m mimi ios         # iOS-style web app (PWA)
+    python -m mimi app         # Android-style TUI
+    python -m mimi sonic       # Sonic CLI
+    python -m mimi --classic   # classic menu
+    python -m mimi web         # browser dashboard
 
 ## Council of 11 Brains
 
@@ -16,14 +17,19 @@ Nusrat (Chairwoman) + 10 departments:
 DevOps · Strategy · Finance · Admin · Study
 Health · Civil · Research · Relations · Legal
 
-## V11 Nova UI
+## V12 iOS app
 
-- 8 premium themes (aurora, nebula, carbon, forest,
-  midnight, sunset, ocean, royal)
-- Truecolor gradients with 256-color fallback
-- 120+ icons, sparklines, bars, gauges
-- Flicker-free curses renderer
-- Android-style bottom-nav app
+Open in browser: `http://127.0.0.1:8765/app`
+
+- True iOS-style UI: nav bar, tab bar, cards, chat
+- Bottom tab navigation: Home · Council · Nusrat · Stats · More
+- Touch-first: tap, swipe, long-press
+- Haptic vibration on every interaction
+- Message-style chat with typing indicator
+- Bottom sheets for add task / goal / expense / journal
+- FAB for quick add
+- PWA: install to home screen (iOS/Android)
+- Offline-capable via service worker
 
 ## Safety
 

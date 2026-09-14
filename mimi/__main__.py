@@ -12,6 +12,10 @@ def main():
         from .sonic import main as sonic
         sys.argv = ["sonic"] + args[1:]
         raise SystemExit(sonic())
+    elif args and args[0] == "ios":
+        from .web.server import run_server
+        print("\n  iOS app: http://127.0.0.1:8765/app\n")
+        run_server(open_browser=True)
     elif args and args[0] == "app":
         from .tui_android import main as android
         android()
