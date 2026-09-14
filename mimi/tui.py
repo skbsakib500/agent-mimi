@@ -40,6 +40,8 @@ SCREENS = [
     ("Web",        "🌐"),
     ("Mimi",       "🛡"),
     ("Oath",       "📜"),
+    ("Lab",        "🧪"),
+    ("Sonar",      "📡"),
     ("Settings",   "⚒"),
 ]
 
@@ -402,6 +404,90 @@ def screen_mimi(stdscr, y, x, h, w):
     for p in PRINCIPLES:
         put(f" {p['id']}. {p['bn']} - {p['name']}", CP_GOOD, True)
         put(f"    {p['rule'][:w-10]}", CP_DIM)
+
+
+
+def screen_lab(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " UPGRADE LAB ")
+    try:
+        from .upgrade import proposal as P
+        from .upgrade import apply as A
+        pend = len(P.pending())
+        snaps = len(A.list_snapshots())
+        total = len(P.list_all())
+    except Exception as e:
+        try:
+            stdscr.addstr(y + 2, x + 3, f"error: {e}",
+                          curses.color_pair(CP_BAD))
+        except Exception:
+            pass
+        return
+    lines = [
+        f"Pending proposals : {pend}",
+        f"Total proposals   : {total}",
+        f"Snapshots         : {snaps}",
+        "",
+        "Enter to open the Upgrade Lab.",
+        "",
+        "detect -> propose -> sandbox ->",
+        "approve (owner) -> apply -> verify",
+        "        on fail -> rollback",
+    ]
+    for i, line in enumerate(lines):
+        col = CP_ACCENT if ":" in line else CP_DIM
+        try:
+            stdscr.addstr(y + 2 + i, x + 3, line[: w - 6],
+                          curses.color_pair(col))
+        except Exception:
+            pass
+
+
+
+def screen_sonar(stdscr, y, x, h, w):
+    draw_box(stdscr, y, x, h, w, " SONAR · SYSTEM HEALTH ")
+    try:
+        from .health.diagnostic import run_all, OK, WARN, FAIL
+        r = run_all()
+    except Exception as e:
+        try:
+            stdscr.addstr(y + 2, x + 3, f"error: {e}",
+                          curses.color_pair(CP_BAD))
+        except Exception:
+            pass
+        return
+
+    row = y + 2
+    def put(line, col=CP_DIM, bold=False):
+        nonlocal row
+        if row >= y + h - 2:
+            return
+        attr = curses.color_pair(col) | (curses.A_BOLD if bold else 0)
+        try:
+            stdscr.addstr(row, x + 3, line[: w - 6], attr)
+        except Exception:
+            pass
+        row += 1
+
+    put(f"OK {r['ok']}   WARN {r['warn']}   FAIL {r['fail']}   "
+        f"({r['elapsed_sec']}s)",
+        CP_GOOD if r['fail'] == 0 else CP_BAD, True)
+    put("")
+
+    for section, items in r["sections"].items():
+        put(f"[{section}]", CP_ACCENT, True)
+        for it in items:
+            if it["status"] == "OK":
+                col = CP_GOOD
+                mark = "OK"
+            elif it["status"] == "WARN":
+                col = CP_WARN
+                mark = "! "
+            else:
+                col = CP_BAD
+                mark = "X "
+            line = f"  {mark} {it['name']:<22} {it['detail'][:40]}"
+            put(line, col)
+        put("")
 
 
 
@@ -951,6 +1037,9 @@ EDITOR_MAP = {
     "Voice":      "mimi.voice",
     "Mimi":       "mimi.self_update",
     "Oath":       "mimi.final_words",
+    "Council":    "mimi.council.tui_chat",
+    "Lab":        "mimi.upgrade.lab",
+    "Sonar":      "mimi.health.diagnostic",
     "Vision":     "mimi.vision",
     "Progress":   "mimi.progress",
     "Automation": "mimi.automation",

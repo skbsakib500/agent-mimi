@@ -2,8 +2,8 @@
 from datetime import datetime
 
 APP_NAME = "AGENT MIMI"
-VERSION = "7.0.0"
-CODENAME = "Aurora Web"
+VERSION = "10.0.0"
+CODENAME = "Guardian"
 SYSTEM = "Personal Life Agent"
 USER_NAME = "SKB Sakib"
 SCHEMA_VERSION = 1
@@ -11,7 +11,7 @@ SCHEMA_VERSION = 1
 
 def greeting():
     try:
-        from . import lang
+        from .. import lang
         bn = lang._current() == "bn"
     except Exception:
         bn = False
