@@ -1,0 +1,24 @@
+{
+  "as_of": "2026-09-15",
+  "git": {
+    "branch": "main",
+    "head": "fe96a3d",
+    "head_subject": "feat: V13 — multi-AI chat, 24/7 daemon, personas, telegram",
+    "clean": false,
+    "last_tag": null
+  },
+  "code": {
+    "python_files": 172,
+    "subpackages": ["core","agents","council","trust","guardian","health","upgrade","plug_store","web","web/ios","ui2"],
+    "version_in_init": "12.0.0"
+  },
+  "features": {
+    "v10_guardian": "released",
+    "v11_nova": "released",
+    "v12_ios": "released",
+    "v13_chat_daemon": "in-flight (committed, not tagged)"
+  },
+  "current_focus": "V13 release prep — version bump, requirements, docs",
+  "next_focus": "V14 — cross-device sync",
+  "known_issues_open": ["KI-A01","KI-A02","KI-A03","KI-A04","KI-A05","KI-A06","KI-A07","KI-A08"]
+}
