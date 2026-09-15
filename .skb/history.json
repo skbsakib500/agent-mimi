@@ -40,23 +40,35 @@
         "Message chat + typing indicator",
         "Service worker offline"
       ]
+    },
+    {
+      "version": "13.0.0",
+      "date": "2026-09-16",
+      "tag": "v13.0.0",
+      "codename": "Chat",
+      "highlights": [
+        "Multi-AI chat + parallel providers",
+        "24/7 daemon, personas, telegram",
+        "Canonical prompt spec integration",
+        "Zero third-party dependencies"
+      ]
     }
   ],
   "milestones": [
     {
       "name": "V13 feature batch committed",
       "date": "2026-09-15",
-      "note": "ai_chat, multi_ai, daemon, personas, learn, location, telegram — commit fe96a3d"
+      "note": "ai_chat, multi_ai, daemon, personas, learn, location, telegram \u2014 commit fe96a3d"
     },
     {
       "name": "SKB memory system added",
       "date": "2026-09-15",
-      "note": "PROJECT.md + 7 docs + .skb/ — commit c1a5894"
+      "note": "PROJECT.md + 7 docs + .skb/ \u2014 commit c1a5894"
     },
     {
       "name": "Schema v1 adopted",
       "date": "2026-09-16",
-      "note": "Migrated to SKB Schema v1 (.skb/ expanded 2 → 6 files)"
+      "note": "Migrated to SKB Schema v1 (.skb/ expanded 2 \u2192 6 files)"
     }
   ],
   "events": [

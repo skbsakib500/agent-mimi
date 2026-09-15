@@ -1,5 +1,30 @@
 # Changelog — Agent Mimi
 
+## [13.0.0] — 2026-09-16
+
+### Added
+- Multi-AI chat session (`ai_chat.py`, `ai_chat_tui.py`)
+- Parallel multi-provider queries (`multi_ai.py`)
+- 24/7 background daemon (`daemon.py`)
+- Personas system (`personas.py`, `persona_tui.py`)
+- Learn + Location modules
+- Telegram bot integration
+- iOS chat API endpoint
+- Runtime prompt wiring — reads from `~/SKB-Dev/spec/lifos/ai/prompts/`
+
+### Changed
+- `ai_plan.py` now loads prompt from canonical spec, hardcoded fallback
+- `ai_plan.build_prompt()` returns 3-tuple `(text, context, source)`
+
+### Architecture
+- Zero third-party dependencies (100% Python stdlib)
+- Canonical prompt spec at `spec/lifos/ai/prompts/`
+- Runtime = adapter · spec = source of truth
+
+### Commits
+- `fe96a3d` feat: V13 — multi-AI chat, 24/7 daemon, personas, telegram
+- `f094ff2` feat: wire ai_plan to Life OS canonical spec
+
 ## [12.0.0] — "iOS"
 
 ### Added

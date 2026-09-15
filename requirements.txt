@@ -1,0 +1,11 @@
+# Agent-Mimi — Python 3.14+ · zero third-party dependencies
+#
+# Everything uses Python standard library:
+#   sqlite3     — database
+#   curses      — TUI
+#   http.server — web interface
+#   hmac        — constitution signing
+#   json, csv, datetime, pathlib, urllib, ...
+#
+# AI providers (Gemini/Groq/etc.) called via urllib.request.
+# If you add a new pip package, list it below — keep this file honest.

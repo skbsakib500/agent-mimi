@@ -1,8 +1,8 @@
 {
   "schema": "skb/v1",
-  "current_focus": "V13 release prep — bump, requirements, docs",
-  "next_focus": "V14 — cross-device sync with Mimi-Android",
-  "progress": 40,
+  "current_focus": "V13.0.0 released \u2014 canonical spec integration",
+  "next_focus": "V14.0.0 \u2014 cross-device sync with Mimi-Android",
+  "progress": 100,
   "build": "ready",
   "tests": "none",
   "git": {
@@ -11,7 +11,7 @@
     "head_subject": "docs: add SKB project memory system",
     "clean": true,
     "ahead_of_remote": 0,
-    "last_tag": null
+    "last_tag": "v13.0.0"
   },
   "known_issues_open": [
     "KI-A01",
