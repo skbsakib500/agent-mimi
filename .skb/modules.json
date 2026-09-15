@@ -1,0 +1,349 @@
+{
+  "schema": "skb/v1",
+  "modules": [
+    {
+      "name": "core",
+      "path": "mimi/core/",
+      "type": "core",
+      "role": "Shared config (USER_NAME, constants)",
+      "status": "active",
+      "dependencies": []
+    },
+    {
+      "name": "main",
+      "path": "mimi/main.py",
+      "type": "core",
+      "role": "Main menu + router dispatch",
+      "status": "active",
+      "dependencies": ["core", "router"]
+    },
+    {
+      "name": "router",
+      "path": "mimi/router.py",
+      "type": "core",
+      "role": "Route actions to modules",
+      "status": "active",
+      "dependencies": []
+    },
+    {
+      "name": "database",
+      "path": "mimi/database.py",
+      "type": "data",
+      "role": "SQLite wrapper + BASE_DIR",
+      "status": "active",
+      "dependencies": []
+    },
+    {
+      "name": "migrations",
+      "path": "mimi/migrations.py",
+      "type": "data",
+      "role": "Schema versioning + migrations",
+      "status": "active",
+      "dependencies": ["database"]
+    },
+    {
+      "name": "council",
+      "path": "mimi/council/",
+      "type": "service",
+      "role": "Council of 11 brains (Nusrat + 10 departments)",
+      "status": "active",
+      "dependencies": ["database", "core"]
+    },
+    {
+      "name": "trust",
+      "path": "mimi/trust/",
+      "type": "service",
+      "role": "HMAC constitution + audit chain verification",
+      "status": "active",
+      "dependencies": ["database"]
+    },
+    {
+      "name": "guardian",
+      "path": "mimi/guardian/",
+      "type": "service",
+      "role": "Sandbox, audit, auto-rollback",
+      "status": "active",
+      "dependencies": ["trust"]
+    },
+    {
+      "name": "constitution",
+      "path": "mimi/constitution.py",
+      "type": "service",
+      "role": "HMAC-SHA256 signed constitution",
+      "status": "active",
+      "dependencies": ["trust"]
+    },
+    {
+      "name": "agents",
+      "path": "mimi/agents/",
+      "type": "service",
+      "role": "Department worker agents",
+      "status": "active",
+      "dependencies": ["core"]
+    },
+    {
+      "name": "health",
+      "path": "mimi/health/",
+      "type": "service",
+      "role": "System diagnostics",
+      "status": "active",
+      "dependencies": ["database"]
+    },
+    {
+      "name": "upgrade",
+      "path": "mimi/upgrade/",
+      "type": "service",
+      "role": "Self-update lab (sandbox testing)",
+      "status": "active",
+      "dependencies": ["guardian"]
+    },
+    {
+      "name": "plug_store",
+      "path": "mimi/plug_store/",
+      "type": "service",
+      "role": "Plugin registry",
+      "status": "active",
+      "dependencies": []
+    },
+    {
+      "name": "tui",
+      "path": "mimi/tui2.py",
+      "type": "ui",
+      "role": "Main Nova TUI (curses)",
+      "status": "active",
+      "dependencies": ["ui2", "router"]
+    },
+    {
+      "name": "ui2",
+      "path": "mimi/ui2/",
+      "type": "ui",
+      "role": "TUI framework — theme, icons, widgets, layout, anim",
+      "status": "active",
+      "dependencies": []
+    },
+    {
+      "name": "tui-android",
+      "path": "mimi/tui_android.py",
+      "type": "ui",
+      "role": "Android-style TUI",
+      "status": "active",
+      "dependencies": ["ui2"]
+    },
+    {
+      "name": "sonic",
+      "path": "mimi/sonic.py",
+      "type": "ui",
+      "role": "Sonic CLI interface",
+      "status": "active",
+      "dependencies": ["router"]
+    },
+    {
+      "name": "classic-tui",
+      "path": "mimi/ui.py",
+      "type": "ui",
+      "role": "Classic menu interface",
+      "status": "active",
+      "dependencies": ["router"]
+    },
+    {
+      "name": "tui-helpers",
+      "path": "mimi/tui_*.py",
+      "type": "ui",
+      "role": "TUI helpers — modal, palette, themes, search, charts",
+      "status": "active",
+      "dependencies": ["ui2"]
+    },
+    {
+      "name": "web-server",
+      "path": "mimi/web/server.py",
+      "type": "service",
+      "role": "HTTP server (stdlib http.server)",
+      "status": "active",
+      "dependencies": ["database", "router"]
+    },
+    {
+      "name": "web-ios",
+      "path": "mimi/web/ios/",
+      "type": "ui",
+      "role": "iOS PWA — shell, manifest, service worker, chat API",
+      "status": "active",
+      "dependencies": ["web-server", "ai-chat"]
+    },
+    {
+      "name": "ai-plan",
+      "path": "mimi/ai_plan.py",
+      "type": "feature",
+      "role": "Daily plan generator (offline + AI)",
+      "status": "active",
+      "dependencies": ["database", "llm", "api-weather"]
+    },
+    {
+      "name": "ai-chat",
+      "path": "mimi/ai_chat.py",
+      "type": "feature",
+      "role": "Multi-AI chat session (history, provider pick)",
+      "status": "active",
+      "dependencies": ["multi-ai"]
+    },
+    {
+      "name": "ai-chat-tui",
+      "path": "mimi/ai_chat_tui.py",
+      "type": "ui",
+      "role": "Chat TUI frontend",
+      "status": "active",
+      "dependencies": ["ai-chat", "ui2"]
+    },
+    {
+      "name": "ai-context",
+      "path": "mimi/ai_context.py",
+      "type": "feature",
+      "role": "Context builder for AI prompts",
+      "status": "active",
+      "dependencies": ["database"]
+    },
+    {
+      "name": "ai-review",
+      "path": "mimi/ai_review.py",
+      "type": "feature",
+      "role": "AI review engine (daily/weekly)",
+      "status": "active",
+      "dependencies": ["llm"]
+    },
+    {
+      "name": "multi-ai",
+      "path": "mimi/multi_ai.py",
+      "type": "service",
+      "role": "Multi-provider AI queries (parallel)",
+      "status": "active",
+      "dependencies": ["api-manager"]
+    },
+    {
+      "name": "llm",
+      "path": "mimi/llm.py",
+      "type": "service",
+      "role": "Provider loader (reads .env)",
+      "status": "active",
+      "dependencies": []
+    },
+    {
+      "name": "api-manager",
+      "path": "mimi/api_manager.py",
+      "type": "service",
+      "role": "Provider registry",
+      "status": "active",
+      "dependencies": []
+    },
+    {
+      "name": "api-gemini",
+      "path": "mimi/api_gemini.py",
+      "type": "service",
+      "role": "Gemini provider",
+      "status": "active",
+      "dependencies": ["api-manager"]
+    },
+    {
+      "name": "api-groq",
+      "path": "mimi/api_groq.py",
+      "type": "service",
+      "role": "Groq provider",
+      "status": "active",
+      "dependencies": ["api-manager"]
+    },
+    {
+      "name": "api-google",
+      "path": "mimi/api_google.py",
+      "type": "service",
+      "role": "Google provider",
+      "status": "active",
+      "dependencies": ["api-manager"]
+    },
+    {
+      "name": "api-http",
+      "path": "mimi/api_http.py",
+      "type": "service",
+      "role": "Generic HTTP provider (OpenRouter, Mistral, OpenAI, Anthropic, DeepSeek)",
+      "status": "active",
+      "dependencies": ["api-manager"]
+    },
+    {
+      "name": "api-weather",
+      "path": "mimi/api_weather.py",
+      "type": "service",
+      "role": "Weather API",
+      "status": "active",
+      "dependencies": []
+    },
+    {
+      "name": "daemon",
+      "path": "mimi/daemon.py",
+      "type": "service",
+      "role": "24/7 scheduler (Termux:Boot)",
+      "status": "active",
+      "dependencies": ["database", "notify"]
+    },
+    {
+      "name": "telegram-bot",
+      "path": "mimi/telegram_bot.py",
+      "type": "service",
+      "role": "Telegram integration",
+      "status": "active",
+      "dependencies": ["database"]
+    },
+    {
+      "name": "domain-modules",
+      "path": "mimi/{tasks,goals,missions,finance,debts,study,journal,daily,time,sleep,routines,productivity,learning,health,mistakes,achievements,career,relationships,digital,faith,personas,automation,recommendations,predict,analytics,insights}.py",
+      "type": "feature",
+      "role": "26 domain modules — CRUD + logic for each life area",
+      "status": "active",
+      "dependencies": ["database"]
+    },
+    {
+      "name": "gamification",
+      "path": "mimi/{xp,levelup,badges,award,loyalty}.py",
+      "type": "feature",
+      "role": "XP, levels, badges, awards",
+      "status": "active",
+      "dependencies": ["database"]
+    },
+    {
+      "name": "data-ops",
+      "path": "mimi/{backup,sync,export,data_manager}.py",
+      "type": "data",
+      "role": "Backup, sync, export, data management",
+      "status": "active",
+      "dependencies": ["database"]
+    },
+    {
+      "name": "notify",
+      "path": "mimi/{notify,notify_setup,scheduler}.py",
+      "type": "service",
+      "role": "Notification system + setup",
+      "status": "active",
+      "dependencies": ["database"]
+    },
+    {
+      "name": "briefing",
+      "path": "mimi/briefing.py",
+      "type": "feature",
+      "role": "Daily briefing generator",
+      "status": "active",
+      "dependencies": ["database", "llm"]
+    },
+    {
+      "name": "self-update",
+      "path": "mimi/self_update.py",
+      "type": "service",
+      "role": "Self-update mechanism",
+      "status": "active",
+      "dependencies": ["upgrade"]
+    },
+    {
+      "name": "system-health",
+      "path": "mimi/system_health.py",
+      "type": "service",
+      "role": "System health checks",
+      "status": "active",
+      "dependencies": ["health"]
+    }
+  ]
+}

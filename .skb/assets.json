@@ -1,0 +1,70 @@
+{
+  "schema": "skb/v1",
+  "assets": [
+    {
+      "type": "config",
+      "path": ".env",
+      "purpose": "API keys (DEEPSEEK_API_KEY, etc.) — NEVER committed"
+    },
+    {
+      "type": "data",
+      "path": "data/mimi.db",
+      "purpose": "Main SQLite database — runtime, not committed"
+    },
+    {
+      "type": "data",
+      "path": "data/profiles/*/mimi.db",
+      "purpose": "Per-profile databases — runtime"
+    },
+    {
+      "type": "data",
+      "path": "data/audit.chain",
+      "purpose": "Signed audit chain — runtime, not committed"
+    },
+    {
+      "type": "data",
+      "path": "data/audit.jsonl",
+      "purpose": "Append-only audit log — runtime"
+    },
+    {
+      "type": "web",
+      "path": "mimi/web/ios/shell.py",
+      "purpose": "iOS PWA single-page UI (embedded HTML/CSS/JS)"
+    },
+    {
+      "type": "web",
+      "path": "mimi/web/ios/pwa.py",
+      "purpose": "PWA manifest"
+    },
+    {
+      "type": "web",
+      "path": "mimi/web/ios/sw.py",
+      "purpose": "Service worker (offline)"
+    },
+    {
+      "type": "config",
+      "path": ".gitignore",
+      "purpose": "Ignore rules — secrets, runtime DB, backups"
+    },
+    {
+      "type": "data",
+      "path": "backups/",
+      "purpose": "ZIP archives (v2 → v12) — runtime"
+    },
+    {
+      "type": "data",
+      "path": "reports/",
+      "purpose": "Generated reports (AI plan, reviews) — runtime"
+    },
+    {
+      "type": "data",
+      "path": "CHANGELOG.md",
+      "purpose": "Version history"
+    },
+    {
+      "type": "data",
+      "path": "README.md",
+      "purpose": "Public overview"
+    }
+  ]
+}

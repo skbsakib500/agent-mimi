@@ -1,0 +1,74 @@
+{
+  "schema": "skb/v1",
+  "releases": [
+    {
+      "version": "10.0.0",
+      "date": "2026-09-14",
+      "tag": null,
+      "commit": "a6ac674",
+      "codename": "Guardian",
+      "highlights": [
+        "Council of 11 Brains",
+        "Crypto constitution (HMAC-SHA256)",
+        "Signed audit chain",
+        "Upgrade lab"
+      ]
+    },
+    {
+      "version": "11.0.0",
+      "date": "2026-09-14",
+      "tag": null,
+      "commit": "a132367",
+      "codename": "Nova",
+      "highlights": [
+        "Nova TUI, theme engine (8 palettes)",
+        "120+ icons",
+        "Widgets, layout, animations",
+        "Android-style UI"
+      ]
+    },
+    {
+      "version": "12.0.0",
+      "date": "2026-09-14",
+      "tag": null,
+      "commit": "687ee26",
+      "codename": "iOS",
+      "highlights": [
+        "iOS-style web app at /app",
+        "PWA install-to-home-screen",
+        "Bottom tab nav (Home, Council, Nusrat, Stats, More)",
+        "Message chat + typing indicator",
+        "Service worker offline"
+      ]
+    }
+  ],
+  "milestones": [
+    {
+      "name": "V13 feature batch committed",
+      "date": "2026-09-15",
+      "note": "ai_chat, multi_ai, daemon, personas, learn, location, telegram — commit fe96a3d"
+    },
+    {
+      "name": "SKB memory system added",
+      "date": "2026-09-15",
+      "note": "PROJECT.md + 7 docs + .skb/ — commit c1a5894"
+    },
+    {
+      "name": "Schema v1 adopted",
+      "date": "2026-09-16",
+      "note": "Migrated to SKB Schema v1 (.skb/ expanded 2 → 6 files)"
+    }
+  ],
+  "events": [
+    {
+      "type": "created",
+      "date": "2026-09-13",
+      "summary": "Agent Mimi project initialized"
+    },
+    {
+      "type": "major-change",
+      "date": "2026-09-15",
+      "summary": "V13 features added (multi-AI, daemon, personas, telegram)"
+    }
+  ]
+}

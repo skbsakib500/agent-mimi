@@ -1,9 +1,9 @@
 {
-  "skb_version": "0.1.0",
-  "project_id": "skb-agent-mimi",
-  "display_name": "Agent Mimi",
+  "schema": "skb/v1",
+  "id": "skb-agent-mimi",
+  "name": "Agent Mimi",
   "type": "python-app",
-  "subtype": "life-os-multi-interface",
+  "subtype": "life-os-brain-multi-interface",
   "version": "12.0.0",
   "status": "active",
   "author": {
@@ -15,17 +15,20 @@
     "remote": "https://github.com/skbsakib500/agent-mimi.git",
     "branch": "main"
   },
-  "stack": {
-    "language": ["python-3.14"],
-    "storage": ["sqlite"],
-    "interfaces": ["tui-curses", "web-http", "cli", "ios-pwa"],
-    "ai_providers": ["gemini","groq","openrouter","mistral","openai","anthropic","deepseek"]
-  },
-  "companions": {
-    "mobile": "Mimi-Android",
-    "backup": "Mimi-Forever",
-    "archived": ["Mimi-APK", "SKB-LifeOS"]
-  },
-  "created": "2026-09-15",
-  "last_touched": "2026-09-15"
+  "stack": [
+    "python-3.14",
+    "sqlite3",
+    "curses",
+    "http.server",
+    "hmac-sha256"
+  ],
+  "companions": [
+    "skb-dev",
+    "skb-mimi-android",
+    "skb-player",
+    "skb-music"
+  ],
+  "purpose": "Mimi Life OS brain — 6 interfaces, council of 11, trust layer",
+  "created": "2026-09-13",
+  "last_touched": "2026-09-16"
 }
