@@ -142,6 +142,14 @@ class Nusrat:
 
     # ── greeting ──
     def _greet(self):
+        # Persona greeting overrides time-based
+        try:
+            from .. import personas
+            g = personas.greeting()
+            if g:
+                return g
+        except Exception:
+            pass
         h = datetime.now().hour
         if h < 5:
             g = "Still up, Sakib?"
@@ -287,8 +295,38 @@ class Nusrat:
         return self._reply(
             f"{len(ds)} departments:\n" + "\n".join(lines))
 
-    # ── LLM fallback ──
+    # ── LLM fallback with knowledge check ──
+    def _persona_system(self, base):
+        try:
+            from .. import personas
+            return personas.system_prompt() + "\n\n" + (base or "")
+        except Exception:
+            return base
+
     def _ask_llm(self, message):
+        # First, check learned knowledge
+        try:
+            from .. import learn
+            hits = learn.recall(message, limit=2)
+            if hits and hits[0]["confidence"] >= 0.5:
+                top = hits[0]
+                return self._reply(
+                    f"[from learned knowledge, conf {top['confidence']:.2f}]\n"
+                    + top["answer"][:1000])
+        except Exception:
+            pass
+        # Then, check multi-AI consensus
+        try:
+            from ..multi_ai import available_providers, ask
+            provs = available_providers()
+            if len(provs) >= 2:
+                # ask one provider for speed (not full consensus)
+                return self._reply(str(ask(message, provider=provs[0]))[:1200])
+        except Exception:
+            pass
+        return self._reply("I don't have a good answer right now.")
+
+    def _ask_llm_old(self, message):
         try:
             from ..agent import Agent
             a = Agent()

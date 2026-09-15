@@ -390,7 +390,7 @@ HTML = r"""<!doctype html>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mimi">
 <meta name="theme-color" content="#007aff">
-<link rel="manifest" href="/app-manifest.json">
+<link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/app-icon.svg">
 <title>Mimi</title>
 <style>__CSS__</style>
@@ -403,7 +403,7 @@ HTML = r"""<!doctype html>
     <div class="navbar-top">
       <button class="navbar-btn" id="navBack" style="visibility:hidden" onclick="goBack()">‹ Back</button>
       <div class="navbar-title-small" id="navTitleSmall"></div>
-      <button class="navbar-btn" onclick="openMoreMenu()">⋯</button>
+      <div style="display:flex;gap:2px"><button class="navbar-btn" onclick="openPersonaSheet()">🎭</button><button class="navbar-btn" onclick="openMoreMenu()">⋯</button></div>
     </div>
     <div class="navbar-title-large" id="navTitleLarge">Mimi</div>
   </div>
@@ -436,6 +436,12 @@ HTML = r"""<!doctype html>
       <div class="list" id="moreList"></div>
     </div>
 
+  </div>
+
+  <!-- ═══ MODE TOGGLE (Nusrat only) ═══ -->
+  <div class="mode-toggle" id="modeToggle" style="display:none">
+    <button id="modeNusrat" class="active" onclick="setMode('nusrat')">✦ Nusrat</button>
+    <button id="modeMulti" onclick="setMode('multi')">🧠 Multi-AI</button>
   </div>
 
   <!-- ═══ COMPOSER (Nusrat only) ═══ -->
@@ -605,6 +611,31 @@ function renderHome() {
     </div>
   `;
   document.getElementById('homeCards').innerHTML = html;
+  renderQuickRow();
+}
+
+function renderQuickRow() {
+  const cur = STATE.persona || 'friend';
+  const html = `
+    <div class="card" style="padding:12px">
+      <div class="card-title">Quick</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="quick-btn" onclick="haptic();switchTab('nusrat')">
+          <span style="font-size:22px">✦</span><span>Chat</span>
+        </button>
+        <button class="quick-btn" onclick="haptic();openPersonaSheet()">
+          <span style="font-size:22px">🎭</span><span>${cur}</span>
+        </button>
+        <button class="quick-btn" onclick="haptic();openAddSheet()">
+          <span style="font-size:22px">+</span><span>Add</span>
+        </button>
+        <button class="quick-btn" onclick="haptic();switchTab('more')">
+          <span style="font-size:22px">⋯</span><span>More</span>
+        </button>
+      </div>
+    </div>`;
+  const wrap = document.getElementById('homeCards');
+  if (wrap) wrap.insertAdjacentHTML('beforeend', html);
 }
 
 // ─── STATS ───
@@ -660,6 +691,11 @@ function renderCouncil() {
 
 // ─── MORE ───
 const MORE_ITEMS = [
+  ['AI Chat',   'mimi.ai_chat_tui','#007aff', '✦'],
+  ['Modes',     'mimi.persona_tui','#af52de', '🎭'],
+  ['Learn',     'mimi.learn_tui',  '#5ac8fa', '🧠'],
+  ['Telegram',  'mimi.telegram_bot','#34c759', '📨'],
+  ['Location',  'mimi.location_tui','#ff2d55', '📍'],
   ['Goals',     'mimi.goals',      '#5856d6', '◈'],
   ['Missions',  'mimi.missions',   '#af52de', '◉'],
   ['Finance',   'mimi.finance',    '#34c759', '৳'],
@@ -1018,7 +1054,7 @@ async function loadCouncil() {
 
 // ─── PWA SERVICE WORKER ───
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/app-sw.js').catch(() => {});
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 
 // ─── INIT ───
@@ -1036,7 +1072,7 @@ async function init() {
   });
 }
 init();
-setInterval(loadData, 15000);
+setInterval(loadData, 60000);
 """
 
 
@@ -1044,3 +1080,257 @@ def render_page():
     """Return the full HTML page with CSS + JS inlined."""
     html = HTML.replace("__CSS__", CSS).replace("__JS__", JS)
     return html
+
+
+CSS += r"""
+/* ─── MULTI-AI BUBBLES ─── */
+.bubble.multi {
+  align-self: stretch;
+  max-width: 100%;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.bubble.multi .provider-head {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px 4px;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  opacity: 0.85;
+}
+.bubble.multi .provider-head .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.bubble.multi .provider-body {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  margin: 0 4px 10px;
+  border: 1.5px solid transparent;
+}
+
+/* per-provider colors */
+.bubble.multi[data-p="deepseek"] .provider-body { background: rgba(0,122,255,0.10); border-color: #007aff; }
+.bubble.multi[data-p="deepseek"] .provider-head { color: #007aff; }
+.bubble.multi[data-p="deepseek"] .dot { background: #007aff; }
+
+.bubble.multi[data-p="groq"] .provider-body { background: rgba(52,199,89,0.10); border-color: #34c759; }
+.bubble.multi[data-p="groq"] .provider-head { color: #34c759; }
+.bubble.multi[data-p="groq"] .dot { background: #34c759; }
+
+.bubble.multi[data-p="gemini"] .provider-body { background: rgba(175,82,222,0.10); border-color: #af52de; }
+.bubble.multi[data-p="gemini"] .provider-head { color: #af52de; }
+.bubble.multi[data-p="gemini"] .dot { background: #af52de; }
+
+.bubble.multi[data-p="openai"] .provider-body { background: rgba(52,199,89,0.10); border-color: #1a8754; }
+.bubble.multi[data-p="openai"] .provider-head { color: #1a8754; }
+.bubble.multi[data-p="openai"] .dot { background: #1a8754; }
+
+.bubble.multi[data-p="anthropic"] .provider-body { background: rgba(255,149,0,0.10); border-color: #ff9500; }
+.bubble.multi[data-p="anthropic"] .provider-head { color: #ff9500; }
+.bubble.multi[data-p="anthropic"] .dot { background: #ff9500; }
+
+.bubble.multi[data-p="ollama"] .provider-body { background: rgba(142,142,147,0.10); border-color: #8e8e93; }
+.bubble.multi[data-p="ollama"] .provider-head { color: #8e8e93; }
+.bubble.multi[data-p="ollama"] .dot { background: #8e8e93; }
+
+/* ─── MODE TOGGLE ─── */
+.mode-toggle {
+  display: flex; gap: 6px; padding: 8px 12px 4px;
+  background: var(--bg);
+  border-bottom: 0.5px solid var(--separator);
+}
+.mode-toggle button {
+  flex: 1; padding: 8px 12px;
+  border-radius: 20px;
+  border: 0.5px solid var(--separator);
+  background: var(--bg2); color: var(--text2);
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mode-toggle button.active {
+  background: var(--blue); color: #fff; border-color: var(--blue);
+}
+"""
+
+
+JS += r"""
+// ─── MULTI-AI MODE ───
+STATE.mode = 'nusrat';         // 'nusrat' | 'multi'
+STATE.providers = [];          // available providers
+
+function setMode(mode) {
+  STATE.mode = mode;
+  document.getElementById('modeNusrat').classList.toggle('active', mode === 'nusrat');
+  document.getElementById('modeMulti').classList.toggle('active', mode === 'multi');
+  haptic(10);
+  if (mode === 'multi' && !STATE.providers.length) {
+    loadProviders();
+  }
+}
+
+async function loadProviders() {
+  try {
+    const r = await fetch('/api/ai-status');
+    const j = await r.json();
+    if (j.ok) {
+      STATE.providers = j.providers || [];
+      if (!STATE.providers.length) {
+        toast('No AI providers configured', true);
+      } else {
+        toast(STATE.providers.length + ' providers ready');
+      }
+    }
+  } catch(e) { toast('Cannot reach AI status', true); }
+}
+
+async function sendMulti(text) {
+  // show user bubble
+  STATE.chat.push({who:'me', text});
+  renderChat();
+  const typing = document.createElement('div');
+  typing.className = 'bubble typing';
+  typing.textContent = '···';
+  document.getElementById('chatWrap').appendChild(typing);
+  document.getElementById('content').scrollTop = 999999;
+
+  try {
+    const r = await fetch('/api/ai-chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({message: text})
+    });
+    const j = await r.json();
+    typing.remove();
+
+    if (!j.ok) {
+      STATE.chat.push({who:'mimi', text: '[error] ' + (j.error || 'unknown')});
+      renderChat();
+      return;
+    }
+    // push as multi-reply
+    STATE.chat.push({who:'multi', replies: j.replies});
+    renderChat();
+    haptic(12);
+  } catch(e) {
+    typing.remove();
+    STATE.chat.push({who:'mimi', text: '[error] ' + e});
+    renderChat();
+  }
+}
+
+// Override renderChat to handle 'multi' messages
+const _origRenderChat = renderChat;
+renderChat = function() {
+  const html = STATE.chat.map(m => {
+    if (m.who === 'multi') {
+      return m.replies.map(r => `
+        <div class="bubble multi" data-p="${r.provider}">
+          <div class="provider-head">
+            <span class="dot"></span>${escapeHtml(r.name)}
+          </div>
+          <div class="provider-body">${escapeHtml(r.text)}</div>
+        </div>
+      `).join('');
+    }
+    return `<div class="bubble ${m.who === 'me' ? 'me' : 'mimi'}">${escapeHtml(m.text)}</div>`;
+  }).join('');
+  const w = document.getElementById('chatWrap');
+  w.innerHTML = html;
+  setTimeout(() => {
+    document.getElementById('content').scrollTop = 999999;
+  }, 30);
+};
+
+// Override sendMessage to route by mode
+const _origSendMessage = sendMessage;
+sendMessage = async function() {
+  const inp = document.getElementById('composerInput');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  inp.style.height = 'auto';
+
+  if (STATE.mode === 'multi') {
+    await sendMulti(text);
+  } else {
+    await _origSendMessage();
+  }
+};
+
+// Show mode toggle only on Nusrat tab (patch switchTab)
+const _origSwitchTab = switchTab;
+switchTab = function(tab, push=true) {
+  _origSwitchTab(tab, push);
+  const mt = document.getElementById('modeToggle');
+  if (mt) mt.style.display = (tab === 'nusrat' ? 'flex' : 'none');
+};
+"""
+
+
+JS += r"""
+// ─── PERSONA MODES ───
+STATE.persona = 'friend';
+
+async function loadPersona() {
+  try {
+    const r = await fetch('/api/persona');
+    const j = await r.json();
+    if (j.ok) {
+      STATE.persona = j.current;
+      STATE.allPersonas = j.all;
+    }
+  } catch(e) {}
+}
+
+function openPersonaSheet() {
+  haptic(12);
+  const list = (STATE.allPersonas || []).map(p => `
+    <div class="list-row" onclick="haptic();setPersona('${p.id}')">
+      <div class="icon" style="background:var(--purple)">${p.icon}</div>
+      <div class="label">${p.name} <span style="color:var(--text3);font-size:13px">(${p.bn})</span></div>
+      ${STATE.persona === p.id ? '<div class="chev">✓</div>' : ''}
+    </div>`).join('');
+  openSheet('Companion Mode', `
+    <div class="list" style="margin:0 0 12px">${list}</div>
+    <button class="btn-secondary" onclick="closeSheet()">Cancel</button>
+  `, null);
+}
+
+async function setPersona(id) {
+  try {
+    const r = await fetch('/api/persona', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({persona: id})
+    });
+    const j = await r.json();
+    if (j.ok) {
+      STATE.persona = j.current;
+      toast('Mode: ' + j.current);
+      haptic(15);
+      closeSheet();
+    } else toast('Failed', true);
+  } catch(e) { toast('Network error', true); }
+}
+
+loadPersona();
+"""
+
+
+CSS += r"""
+.quick-btn {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 8px 4px;
+  background: var(--bg); border: 0.5px solid var(--separator);
+  border-radius: 10px;
+  color: var(--text); font-size: 11px; font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.12s, background 0.12s;
+}
+.quick-btn:active { transform: scale(0.94); background: var(--separator); }
+"""

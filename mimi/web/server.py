@@ -20,7 +20,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store")
+        self.send_header("Cache-Control", "public, max-age=30")
         self.end_headers()
         self.wfile.write(body)
 
@@ -130,6 +130,54 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self._send(500, json.dumps({"ok": False,
                                              "error": str(e)}),
+                           "application/json")
+            return
+        if path == "/api/persona":
+            try:
+                from ..personas import list_all, current_name, set_persona
+                if self.command == "GET":
+                    self._send(200, json.dumps({
+                        "ok": True,
+                        "current": current_name(),
+                        "all": [{"id": p["id"], "name": p["name"],
+                                 "bn": p["bn"], "icon": p["icon"]}
+                                for p in list_all()],
+                    }), "application/json")
+                else:
+                    new_p = payload.get("persona")
+                    ok = set_persona(new_p) if new_p else False
+                    self._send(200, json.dumps({"ok": ok,
+                                                 "current": current_name()}),
+                               "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"ok": False, "error": str(e)}),
+                           "application/json")
+            return
+        if path == "/api/ai-status":
+            try:
+                from .ios.ai_chat_api import status
+                self._send(200, json.dumps({"ok": True, **status()}),
+                           "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"ok": False, "error": str(e)}),
+                           "application/json")
+            return
+        if path == "/api/ai-chat":
+            try:
+                from .ios.ai_chat_api import handle_chat
+                result = handle_chat(payload)
+                self._send(200, json.dumps(result), "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"ok": False, "error": str(e)}),
+                           "application/json")
+            return
+        if path == "/api/ai-reset":
+            try:
+                from .ios.ai_chat_api import reset
+                result = reset()
+                self._send(200, json.dumps(result), "application/json")
+            except Exception as e:
+                self._send(500, json.dumps({"ok": False, "error": str(e)}),
                            "application/json")
             return
         if path == "/api/chat":

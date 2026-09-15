@@ -1,10 +1,31 @@
+# ─── Python ───
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# ─── Secrets ───
+.env
+.env.*
+*.key
+*.pem
+
+# ─── Runtime database ───
+data/*.db
 data/*.db-shm
 data/*.db-wal
+data/profiles/*/mimi.db
 data/profiles/*/mimi.db-shm
 data/profiles/*/mimi.db-wal
+data/audit.chain
+data/audit.jsonl
+data/*.log
+
+# ─── Generated ───
 .termux/
 exports/
 reports/
 backups/
+*.egg-info/
+.pytest_cache/
+.cache/

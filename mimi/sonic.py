@@ -382,6 +382,67 @@ def act_nusrat(question=None):
         print(c(f"  Nusrat: {ln}", MG))
 
 
+
+
+def act_ai_chat():
+    """Launch multi-AI chat."""
+    from .ai_chat_tui import main
+    main()
+
+
+def act_modes():
+    from .persona_tui import main
+    main()
+
+
+def act_learn():
+    from .learn_tui import main
+    main()
+
+
+def act_telegram():
+    print()
+    print(c("  TELEGRAM BOT", B + MG))
+    print(c("  " + "-" * 40, D + WH))
+    try:
+        from .telegram_bot import is_configured
+        if not is_configured():
+            print(c("  X not configured", RD))
+            print("  Set telegram_bot_token and telegram_chat_id")
+            return
+        print(c("  ✓ configured", GR))
+        print()
+        print("  start:  python -m mimi.telegram_bot")
+        print("  test:   python -m mimi.telegram_bot test")
+        print("  whoami: python -m mimi.telegram_bot whoami")
+    except Exception as e:
+        print(c(f"  X {e}", RD))
+
+
+def act_location():
+    from .location_tui import main
+    main()
+
+
+def act_daemon():
+    from .daemon import status, stop_daemon, run_forever
+    print()
+    print(c("  DAEMON", B + MG))
+    print(c("  " + "-" * 40, D + WH))
+    st = status()
+    if st.get("running"):
+        print(c(f"  ✓ running (pid {st['pid']})", GR))
+        if input("  stop? [y/N]: ").strip().lower() == "y":
+            ok, msg = stop_daemon()
+            print(f"  {msg}")
+    else:
+        print(c("  · not running", D + WH))
+        print()
+        print("  start: python -m mimi.daemon start")
+        print("  test:  python -m mimi.daemon test")
+
+
+
 # ──────────── menu ────────────
 
 MENU = [
@@ -485,6 +546,18 @@ def main():
         act_report(); return 0
     if cmd == "council":
         act_council(); return 0
+    if cmd == "ai":
+        act_ai_chat(); return 0
+    if cmd == "modes":
+        act_modes(); return 0
+    if cmd == "learn":
+        act_learn(); return 0
+    if cmd == "tg":
+        act_telegram(); return 0
+    if cmd == "loc":
+        act_location(); return 0
+    if cmd == "daemon":
+        act_daemon(); return 0
     if cmd == "nusrat":
         act_nusrat(" ".join(argv[1:]) or None); return 0
     if cmd == "ask":
