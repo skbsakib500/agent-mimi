@@ -2,6 +2,11 @@
 from datetime import date, datetime
 from .database import fetch_one, fetch_all
 from .llm import load_provider
+try:
+    from .prompt_loader import load_prompt, validate_prompt
+except ImportError:
+    load_prompt = None
+    validate_prompt = None
 
 
 def _q(sql, default=0):
@@ -103,6 +108,7 @@ Rules:
 
 
 def build_prompt():
+    """Build prompt from canonical spec, fallback to hardcoded PROMPT."""
     try:
         from .core import USER_NAME
     except Exception:
@@ -116,13 +122,41 @@ def build_prompt():
         f"- {x['title']} ({x['progress']}%, due {x['deadline']})"
         for x in g["goals_urgent"]) or "(none)"
 
-    return PROMPT.format(
-        user=USER_NAME, date=g["date"],
-        weather=g["weather"] or "unknown",
-        energy=g["energy"] or 5,
-        sleep=g["sleep_avg"], overdue=g["overdue"],
-        study_today=g["study_today"], study_week=g["study_week"],
-        tasks=tasks_text, goals=goals_text), g
+    # Inputs matching spec's declared inputs
+    inputs = {
+        "user": USER_NAME,
+        "date": g["date"],
+        "weather": g["weather"] or "unknown",
+        "energy": g["energy"] or 5,
+        "sleep": g["sleep_avg"],
+        "sleep_avg": g["sleep_avg"],
+        "overdue": g["overdue"],
+        "study_today": g["study_today"],
+        "study_week": g["study_week"],
+        "tasks": tasks_text,
+        "goals": goals_text,
+    }
+
+    # Try canonical spec first
+    template = PROMPT
+    source = "hardcoded"
+    if load_prompt:
+        try:
+            spec = load_prompt("daily_plan")
+            if spec and spec.get("body"):
+                template = spec["body"]
+                source = spec["source"]
+                # Validate inputs
+                if validate_prompt:
+                    missing = validate_prompt(spec, inputs.keys())
+                    if missing:
+                        # Fallback to hardcoded if spec incompatible
+                        template = PROMPT
+                        source = f"hardcoded (spec missing: {missing})"
+        except Exception:
+            pass
+
+    return template.format(**inputs), g, source
 
 
 def offline_plan(g):
@@ -158,7 +192,7 @@ def offline_plan(g):
 
 
 def plan():
-    prompt, g = build_prompt()
+    prompt, g, source = build_prompt()
     llm = load_provider()
     if llm:
         try:
