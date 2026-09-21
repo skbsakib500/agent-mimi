@@ -33,9 +33,19 @@ jobs:
             .buildozer
           key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
 
-      - name: 5. Pre-accept Android SDK Licenses
+      - name: 5. Pre-Inject Android SDK Licenses into Buildozer Directory
         run: |
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+          
+          # Inject official SHA1 license hashes to bypass interactive prompt
+          echo -e "\n89330172245f2650b1035c9927328397754117d0\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63718c309d6089f2781112c1b0736f77\n3698766f0145705696b721a371dbe5ed13224001\n84831b94fe705e206220d96122d32e5235685c47\n7a5973e02845b6ac7017b51a4041c12970121693\n33b622b2e2020397f32d43632f0c2a20b784a3c1" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          echo -e "\n84831b94fe705e206220d96122d32e5235685c47" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+          echo -e "\nd97545517057a861a3f08cce72314560a80e1189" > ~/.buildozer/android/platform/android-sdk/licenses/android-googletv-license
+
+          # Copy system licenses as additional fallback
+          if [ -d "$ANDROID_HOME/licenses" ]; then
+            cp -r $ANDROID_HOME/licenses/* ~/.buildozer/android/platform/android-sdk/licenses/ 2>/dev/null || true
+          fi
 
       - name: 6. Compile Android APK Matrix
         run: |
