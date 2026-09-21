@@ -1,11 +1,15 @@
-# Agent-Mimi — Python 3.14+ · zero third-party dependencies
-#
-# Everything uses Python standard library:
-#   sqlite3     — database
-#   curses      — TUI
-#   http.server — web interface
-#   hmac        — constitution signing
-#   json, csv, datetime, pathlib, urllib, ...
-#
-# AI providers (Gemini/Groq/etc.) called via urllib.request.
-# If you add a new pip package, list it below — keep this file honest.
+certifi==2026.7.22
+charset-normalizer==3.5.1
+fonttools==4.65.0
+idna==3.20
+markdown-it-py==4.2.0
+mdurl==0.1.2
+packaging==26.3
+proot-distro @ file:///home/builder/.termux-build/proot-distro/src
+Pygments==2.21.0
+requests==2.34.2
+rich==15.0.0
+setuptools==84.0.0
+termux-python==0.1.0
+urllib3==2.8.0
+wheel==0.48.0
