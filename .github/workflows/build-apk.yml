@@ -21,9 +21,9 @@ jobs:
       - name: 3. Setup Build Environment & Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev ccache
+          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev libsqlite3-dev ccache
           pip install --upgrade pip
-          pip install buildozer cython==0.29.33
+          pip install buildozer "cython<3.0.0"
 
       - name: 4. Restore Buildozer Cache (Speed Optimization)
         uses: actions/cache@v4
@@ -35,7 +35,7 @@ jobs:
 
       - name: 5. Compile Android APK Matrix
         run: |
-          yes | buildozer android debug
+          buildozer android debug
 
       - name: 6. Upload Generated Life OS APK Artifact
         uses: actions/upload-artifact@v4
