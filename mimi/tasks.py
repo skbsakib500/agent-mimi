@@ -1,64 +1,63 @@
-"""Tasks module."""
-from datetime import datetime
-from .database import fetch_all, fetch_one, execute
-from .award import award
-from .ui import GREEN, RED, c, header, menu, ask, ask_date, ask_int, pause, print_rows
+from mimi.database import get_db
 
-def add():
-    header("NEW TASK")
-    title = ask("Title")
-    if not title:
-        print(c("  X Title required.", RED)); return
-    mid = ask_int("Mission ID (0 = none)", 0, 0)
-    desc = ask("Description", "")
-    due = ask_date("Due date", allow_blank=True)
-    priority = ask("Priority", "medium")
-    execute("""INSERT INTO tasks (mission_id, title, description, due_date,
-               priority, status) VALUES (?, ?, ?, ?, ?, 'pending')""",
-            (mid or None, title, desc, due, priority))
-    print(c("  OK Task saved.", GREEN))
+def add_task(title, mission_id=0, description="", due_date=None, priority="medium"):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO tasks (title, mission_id, description, due_date, priority, status) VALUES (?, ?, ?, ?, ?, 'active')",
+        (title, mission_id, description, due_date, priority)
+    )
+    conn.commit()
+    conn.close()
 
-def list_records():
-    header("TASKS")
-    rows = fetch_all("""SELECT t.*, m.title AS mission_title FROM tasks t
-                        LEFT JOIN missions m ON t.mission_id=m.id
-                        ORDER BY COALESCE(t.due_date,'9999-12-31'),
-                        t.id DESC LIMIT 100""")
-    print_rows(rows, [("id","ID"),("mission_title","Mission"),("title","Task"),
-                      ("due_date","Due"),("priority","Priority"),
-                      ("status","Status"),("completed_at","Done at")])
+def list_tasks(sort_by="id", status_filter=None):
+    conn = get_db()
+    cursor = conn.cursor()
+    query = "SELECT id, title, priority, status, due_date, description FROM tasks"
+    params = []
+    where_clauses = []
 
-def complete():
-    header("COMPLETE TASK")
-    rid = ask_int("Task ID", minimum=1)
-    row = fetch_one("SELECT * FROM tasks WHERE id=?", (rid,))
-    if not row:
-        print(c("  X Not found.", RED)); return
-    now = datetime.now().isoformat(timespec="seconds")
-    execute("UPDATE tasks SET status='completed', completed_at=? WHERE id=?",
-            (now, rid))
-    if row["mission_id"]:
-        from .missions import sync_progress
-        sync_progress(row["mission_id"])
-    print(c("  OK Task completed.", GREEN))
-    award("task_complete")
+    if status_filter:
+        where_clauses.append("status = ?")
+        params.append(status_filter)
 
-def summary():
-    r = fetch_one("""SELECT COUNT(*) AS t,
-        SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) AS done,
-        SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) AS pend FROM tasks""")
-    print(f"\n  Total: {r['t']}   Done: {r['done'] or 0}   Pending: {r['pend'] or 0}")
+    if where_clauses:
+        query += " WHERE " + " AND ".join(where_clauses)
 
-def main():
-    while True:
-        ch = menu([("1","Add task"),("2","List"),("3","Complete"),
-                   ("4","Summary"),("0","Exit")], "TASKS MENU")
-        if ch == "1": add()
-        elif ch == "2": list_records()
-        elif ch == "3": complete()
-        elif ch == "4": summary()
-        elif ch == "0": break
-        else: print(c("  X Invalid.", RED))
-        if ch != "0": pause()
+    if sort_by == "priority":
+        query += " ORDER BY CASE priority WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END"
+    elif sort_by == "due_date":
+        query += " ORDER BY due_date ASC"
+    else:
+        query += " ORDER BY id DESC"
 
-run = main
+    cursor.execute(query, params)
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def edit_task(task_id, title=None, priority=None, due_date=None):
+    conn = get_db()
+    cursor = conn.cursor()
+    if title:
+        cursor.execute("UPDATE tasks SET title = ? WHERE id = ?", (title, task_id))
+    if priority:
+        cursor.execute("UPDATE tasks SET priority = ? WHERE id = ?", (priority, task_id))
+    if due_date:
+        cursor.execute("UPDATE tasks SET due_date = ? WHERE id = ?", (due_date, task_id))
+    conn.commit()
+    conn.close()
+
+def delete_task(task_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+    conn.commit()
+    conn.close()
+
+def complete_task(task_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE tasks SET status = 'completed' WHERE id = ?", (task_id,))
+    conn.commit()
+    conn.close()
