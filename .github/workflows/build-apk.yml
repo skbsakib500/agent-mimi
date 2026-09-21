@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: 1. Checkout Core Codebase
         uses: actions/checkout@v4
+        with:
+          submodules: false
 
       - name: 2. Set up Python Runtime
         uses: actions/setup-python@v5
@@ -25,16 +27,20 @@ jobs:
           pip install --upgrade pip
           pip install buildozer "cython<3.0.0"
 
-      - name: 4. Link Pre-installed System Android SDK & Build-Tools
+      - name: 4. Bridge Android SDK Tools & Accept Licenses
         run: |
-          # Clear any corrupted cache directories
+          # Buildozer Cache ক্লিন করা
           rm -rf ~/.buildozer/android/platform/android-sdk
           mkdir -p ~/.buildozer/android/platform
           
-          # Symlink GitHub Runner's pre-installed Android SDK ($ANDROID_HOME)
+          # Buildozer legacy 'tools/bin' পাথকে 'cmdline-tools/latest/bin'-এর সাথে ব্রিজ করা
+          sudo mkdir -p $ANDROID_HOME/tools
+          sudo ln -sf $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/tools/bin
+          
+          # System SDK সিমলিংক করা
           ln -s $ANDROID_HOME ~/.buildozer/android/platform/android-sdk
           
-          # Pre-accept all system SDK licenses
+          # SDK লাইসেন্স অটো-অ্যাকসেপ্ট করা
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: 5. Compile Android APK Matrix
