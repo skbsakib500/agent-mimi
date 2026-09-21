@@ -25,29 +25,23 @@ jobs:
           pip install --upgrade pip
           pip install buildozer "cython<3.0.0"
 
-      - name: 4. Restore Buildozer Cache (Speed Optimization)
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.buildozer
-            .buildozer
-          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
-
-      - name: 5. Pre-Inject Android SDK Licenses into Global User Directory
+      - name: 4. Link Pre-installed System Android SDK & Build-Tools
         run: |
-          # Use ~/.android/licenses instead of buildozer SDK dir to avoid breaking buildozer's existence check
-          mkdir -p ~/.android/licenses
+          # Clear any corrupted cache directories
+          rm -rf ~/.buildozer/android/platform/android-sdk
+          mkdir -p ~/.buildozer/android/platform
           
-          # Inject standard Android SDK SHA-1 license hashes
-          echo -e "\n89330172245f2650b1035c9927328397754117d0\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63718c309d6089f2781112c1b0736f77\n3698766f0145705696b721a371dbe5ed13224001\n84831b94fe705e206220d96122d32e5235685c47\n7a5973e02845b6ac7017b51a4041c12970121693\n33b622b2e2020397f32d43632f0c2a20b784a3c1" > ~/.android/licenses/android-sdk-license
-          echo -e "\n84831b94fe705e206220d96122d32e5235685c47" > ~/.android/licenses/android-sdk-preview-license
-          echo -e "\nd97545517057a861a3f08cce72314560a80e1189" > ~/.android/licenses/android-googletv-license
+          # Symlink GitHub Runner's pre-installed Android SDK ($ANDROID_HOME)
+          ln -s $ANDROID_HOME ~/.buildozer/android/platform/android-sdk
+          
+          # Pre-accept all system SDK licenses
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: 6. Compile Android APK Matrix
+      - name: 5. Compile Android APK Matrix
         run: |
           buildozer android debug
 
-      - name: 7. Upload Generated Life OS APK Artifact
+      - name: 6. Upload Generated Life OS APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Agent-Mimi-LifeOS-v12.0.0
