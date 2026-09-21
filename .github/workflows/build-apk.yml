@@ -36,20 +36,20 @@ jobs:
           pip install --upgrade pip setuptools
           pip install "cython==0.29.36" buildozer
 
-      - name: 5. Pre-accept Android SDK Licenses globally & inside Buildozer
+      - name: 5. Pre-setup Android Cmdline-tools & Accept Licenses
         run: |
-          mkdir -p ~/.android/licenses
-          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
 
-          printf "89330172245f2650b1035c9927328397754117d0\n24333f8a63718c309d6089f2781112c1b0736f77\nd56f5187479451eabf01fb78af6dfcb131a6481e\n3698766f0145705696b721a371dbe5ed13224001\n84831b94fe705e206220d96122d32e5235685c47\n7a5973e02845b6ac7017b51a4041c12970121693\n33b622b2e2020397f32d43632f0c2a20b784a3c1\ne67562094832f9e72638be402813fd923d3501c1\n" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          printf "84831b94fe705e206220d96122d32e5235685c47\n" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9441835_latest.zip -O /tmp/cmdline.zip
+          unzip -q /tmp/cmdline.zip -d /tmp/cmdline
+          mv /tmp/cmdline/cmdline-tools/* ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/
+          rm -rf /tmp/cmdline /tmp/cmdline.zip
 
-          cp ~/.buildozer/android/platform/android-sdk/licenses/* ~/.android/licenses/
+          SDKMGR="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager"
+          SDK_ROOT="$HOME/.buildozer/android/platform/android-sdk"
 
-          SDKMANAGER_BIN=$(find $ANDROID_HOME -name sdkmanager -type f | head -n 1)
-          if [ -n "$SDKMANAGER_BIN" ]; then
-            yes | $SDKMANAGER_BIN --sdk_root=$HOME/.buildozer/android/platform/android-sdk --licenses || true
-          fi
+          yes | $SDKMGR --sdk_root=$SDK_ROOT --licenses || true
+          yes | $SDKMGR --sdk_root=$SDK_ROOT "build-tools;33.0.2" "platforms;android-33" "platform-tools" || true
 
       - name: 6. Compile Android APK Matrix
         env:
