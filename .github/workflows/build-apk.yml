@@ -41,15 +41,29 @@ jobs:
           mkdir -p ~/.android/licenses
           mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
 
-          LIC_HASHES="\n89330172245f2650b1035c9927328397754117d0\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63718c309d6089f2781112c1b0736f77\n3698766f0145705696b721a371dbe5ed13224001\n84831b94fe705e206220d96122d32e5235685c47\n7a5973e02845b6ac7017b51a4041c12970121693\n33b622b2e2020397f32d43632f0c2a20b784a3c1\ne67562094832f9e72638be402813fd923d3501c1"
+          # Write standard SDK license hashes
+          cat << 'LICEOF' > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+89330172245f2650b1035c9927328397754117d0
+24333f8a63718c309d6089f2781112c1b0736f77
+d56f5187479451eabf01fb78af6dfcb131a6481e
+3698766f0145705696b721a371dbe5ed13224001
+84831b94fe705e206220d96122d32e5235685c47
+7a5973e02845b6ac7017b51a4041c12970121693
+33b622b2e2020397f32d43632f0c2a20b784a3c1
+e67562094832f9e72638be402813fd923d3501c1
+LICEOF
 
-          echo -e "$LIC_HASHES" > ~/.android/licenses/android-sdk-license
-          echo -e "$LIC_HASHES" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          cat << 'LICEOF' > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+84831b94fe705e206220d96122d32e5235685c47
+LICEOF
 
-          echo -e "\n84831b94fe705e206220d96122d32e5235685c47" > ~/.android/licenses/android-sdk-preview-license
-          echo -e "\n84831b94fe705e206220d96122d32e5235685c47" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+          cp ~/.buildozer/android/platform/android-sdk/licenses/* ~/.android/licenses/
 
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # Dynamically locate sdkmanager in Runner system and pre-accept for Buildozer root
+          SDKMANAGER_BIN=$(find $ANDROID_HOME -name sdkmanager -type f | head -n 1)
+          if [ -n "$SDKMANAGER_BIN" ]; then
+            yes | $SDKMANAGER_BIN --sdk_root=$HOME/.buildozer/android/platform/android-sdk --licenses || true
+          fi
 
       - name: 6. Compile Android APK Matrix
         env:
