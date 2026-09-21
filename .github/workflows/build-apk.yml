@@ -15,39 +15,45 @@ jobs:
         with:
           submodules: false
 
-      - name: 2. Set up Python Runtime
+      - name: 2. Set up Java 17 Runtime
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 3. Set up Python Runtime
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: 3. Setup Build Environment & Dependencies
+      - name: 4. Setup Build Environment & Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev libsqlite3-dev ccache
           pip install --upgrade pip
           pip install buildozer "cython<3.0.0"
 
-      - name: 4. Bridge Android SDK Tools & Accept Licenses
+      - name: 5. Bridge Android SDK (Fix Libs & Binaries Path)
         run: |
-          # Buildozer Cache ক্লিন করা
+          # Clean broken cache/symlinks
           rm -rf ~/.buildozer/android/platform/android-sdk
           mkdir -p ~/.buildozer/android/platform
-          
-          # Buildozer legacy 'tools/bin' পাথকে 'cmdline-tools/latest/bin'-এর সাথে ব্রিজ করা
-          sudo mkdir -p $ANDROID_HOME/tools
-          sudo ln -sf $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/tools/bin
-          
-          # System SDK সিমলিংক করা
+
+          # Correctly link cmdline-tools/latest -> tools (preserves both bin and lib)
+          sudo rm -rf $ANDROID_HOME/tools
+          sudo ln -sf $ANDROID_HOME/cmdline-tools/latest $ANDROID_HOME/tools
+
+          # Link system Android SDK to Buildozer
           ln -s $ANDROID_HOME ~/.buildozer/android/platform/android-sdk
-          
-          # SDK লাইসেন্স অটো-অ্যাকসেপ্ট করা
+
+          # Accept SDK Licenses
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: 5. Compile Android APK Matrix
+      - name: 6. Compile Android APK Matrix
         run: |
           buildozer android debug
 
-      - name: 6. Upload Generated Life OS APK Artifact
+      - name: 7. Upload Generated Life OS APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Agent-Mimi-LifeOS-v12.0.0
