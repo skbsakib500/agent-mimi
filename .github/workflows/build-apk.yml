@@ -26,7 +26,7 @@ jobs:
           pip install buildozer cython==0.29.33
 
       - name: 4. Restore Buildozer Cache (Speed Optimization)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.buildozer
@@ -38,7 +38,7 @@ jobs:
           yes | buildozer android debug
 
       - name: 6. Upload Generated Life OS APK Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Agent-Mimi-LifeOS-v12.0.0
           path: bin/*.apk
