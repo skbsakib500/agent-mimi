@@ -47,7 +47,7 @@ jobs:
         env:
           APP_ANDROID_ACCEPT_SDK_LICENSES: '1'
         run: |
-          buildozer android debug
+          yes | buildozer android debug
 
       - name: 7. Upload Generated Life OS APK Artifact
         uses: actions/upload-artifact@v4
