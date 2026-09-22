@@ -21,8 +21,9 @@ jobs:
           mkdir -p /github/home/.buildozer/android/platform/android-sdk/licenses
           mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
 
-          # Download and setup commandline-tools in both paths
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9441835_latest.zip -O /tmp/cmdline.zip
+          # Download using Python (no wget dependency required)
+          python3 -c "import urllib.request; urllib.request.urlretrieve('https://dl.google.com/android/repository/commandlinetools-linux-9441835_latest.zip', '/tmp/cmdline.zip')"
+          
           unzip -q /tmp/cmdline.zip -d /tmp/cmdline
 
           for SDK_DIR in "/github/home/.buildozer/android/platform/android-sdk" "~/.buildozer/android/platform/android-sdk"; do
