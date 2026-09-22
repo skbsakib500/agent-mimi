@@ -12,7 +12,6 @@ osx.kivy_version = 2.2.1
 fullscreen = 0
 android.presplash_color = #0F172A
 
-# Android Permissions & API Config
 android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 android.api = 33
 android.minapi = 24
