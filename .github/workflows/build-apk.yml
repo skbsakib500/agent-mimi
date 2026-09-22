@@ -16,13 +16,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Android SDK, Cmdline-tools & Legacy Symlink
+      - name: Set up Android SDK, Cmdline-tools & Explicitly Install Build-Tools 33.0.2
         run: |
           SDK_ROOT="/github/home/.buildozer/android/platform/android-sdk"
           mkdir -p "$SDK_ROOT/licenses"
           mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
 
-          # Download a verified commandline-tools zip using Python
+          # Download and setup commandline-tools using Python
           python3 -c "
           import urllib.request
           url = 'https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip'
@@ -32,12 +32,9 @@ jobs:
 
           unzip -q /tmp/cmdline.zip -d /tmp/cmdline
 
-          # Setup proper structure for both paths
           for DIR in "$SDK_ROOT" "$HOME/.buildozer/android/platform/android-sdk"; do
             mkdir -p "$DIR/cmdline-tools/latest"
             cp -r /tmp/cmdline/cmdline-tools/* "$DIR/cmdline-tools/latest/"
-            
-            # Create legacy 'tools' symlink so tools/bin/sdkmanager exists
             rm -rf "$DIR/tools"
             ln -sfn "$DIR/cmdline-tools/latest" "$DIR/tools"
           done
@@ -50,6 +47,11 @@ jobs:
           printf "$LIC_HASHES" > "$SDK_ROOT/licenses/android-sdk-license"
           printf "$LIC_HASHES" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
           printf "84831b94fe705e206220d96122d32e5235685c47\n" > "$SDK_ROOT/licenses/android-sdk-preview-license"
+
+          # Explicitly install build-tools 33.0.2 and platform 33 using sdkmanager
+          SDKMANAGER="$SDK_ROOT/tools/bin/sdkmanager"
+          yes | $SDKMANAGER --sdk_root="$SDK_ROOT" --licenses || true
+          yes | $SDKMANAGER --sdk_root="$SDK_ROOT" "build-tools;33.0.2" "platforms;android-33" "platform-tools" || true
 
       - name: Build APK with Buildozer
         run: |
