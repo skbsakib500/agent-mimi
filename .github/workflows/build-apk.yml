@@ -16,17 +16,40 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Pre-seed Android SDK Licenses
+      - name: Set up Android SDK, Cmdline-tools & Legacy Symlink
         run: |
-          mkdir -p /github/home/.buildozer/android/platform/android-sdk/licenses
+          SDK_ROOT="/github/home/.buildozer/android/platform/android-sdk"
+          mkdir -p "$SDK_ROOT/licenses"
           mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
 
+          # Download a verified commandline-tools zip using Python
+          python3 -c "
+          import urllib.request
+          url = 'https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip'
+          print('Downloading commandline-tools...')
+          urllib.request.urlretrieve(url, '/tmp/cmdline.zip')
+          "
+
+          unzip -q /tmp/cmdline.zip -d /tmp/cmdline
+
+          # Setup proper structure for both paths
+          for DIR in "$SDK_ROOT" "$HOME/.buildozer/android/platform/android-sdk"; do
+            mkdir -p "$DIR/cmdline-tools/latest"
+            cp -r /tmp/cmdline/cmdline-tools/* "$DIR/cmdline-tools/latest/"
+            
+            # Create legacy 'tools' symlink so tools/bin/sdkmanager exists
+            rm -rf "$DIR/tools"
+            ln -sfn "$DIR/cmdline-tools/latest" "$DIR/tools"
+          done
+
+          rm -rf /tmp/cmdline /tmp/cmdline.zip
+
+          # Pre-seed license hashes
           LIC_HASHES="89330172245f2650b1035c9927328397754117d0\n24333f8a63718c309d6089f2781112c1b0736f77\nd56f5187479451eabf01fb78af6dfcb131a6481e\n3698766f0145705696b721a371dbe5ed13224001\n84831b94fe705e206220d96122d32e5235685c47\n7a5973e02845b6ac7017b51a4041c12970121693\n33b622b2e2020397f32d43632f0c2a20b784a3c1\ne67562094832f9e72638be402813fd923d3501c1"
 
-          printf "$LIC_HASHES" > /github/home/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          printf "$LIC_HASHES" > "$SDK_ROOT/licenses/android-sdk-license"
           printf "$LIC_HASHES" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          printf "84831b94fe705e206220d96122d32e5235685c47\n" > /github/home/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
-          printf "84831b94fe705e206220d96122d32e5235685c47\n" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+          printf "84831b94fe705e206220d96122d32e5235685c47\n" > "$SDK_ROOT/licenses/android-sdk-preview-license"
 
       - name: Build APK with Buildozer
         run: |
